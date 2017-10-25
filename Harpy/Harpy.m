@@ -69,6 +69,7 @@ NSString * const HarpyLanguageVietnamese            = @"vi";
 @property (nonatomic, copy) NSString *nextTimeButtonText;
 @property (nonatomic, copy) NSString *skipButtonText;
 
+@property (nonatomic, copy) NSString *releaseNotes;
 @end
 
 @implementation Harpy
@@ -191,6 +192,7 @@ NSString * const HarpyLanguageVietnamese            = @"vi";
              */
 
             NSString *releaseDateString = [[results valueForKey:@"currentVersionReleaseDate"] objectAtIndex:0];
+            
             if (releaseDateString == nil) {
                 return;
             } else {
@@ -200,6 +202,11 @@ NSString * const HarpyLanguageVietnamese            = @"vi";
                     [self printDebugMessage:message];
                     return;
                 }
+            }
+            
+            NSArray *list = [results valueForKey:@"releaseNotes"];
+            if (list.count > 0) {
+                _releaseNotes = list[0];
             }
 
             /**
@@ -423,13 +430,13 @@ NSString * const HarpyLanguageVietnamese            = @"vi";
     // Force localization if _forceLanguageLocalization is set
     if (_forceLanguageLocalization) {
         _updateAvailableMessage = [self forcedLocalizedStringForKey:@"Update Available"];
-        _theNewVersionMessage = [NSString stringWithFormat:[self forcedLocalizedStringForKey:@"A new version of %@ is available. Please update to version %@ now."], _appName, currentAppStoreVersion];
+        _theNewVersionMessage = _releaseNotes ?: [NSString stringWithFormat:[self forcedLocalizedStringForKey:@"A new version of %@ is available. Please update to version %@ now."], _appName, currentAppStoreVersion];
         _updateButtonText = [self forcedLocalizedStringForKey:@"Update"];
         _nextTimeButtonText = [self forcedLocalizedStringForKey:@"Next time"];
         _skipButtonText = [self forcedLocalizedStringForKey:@"Skip this version"];
     } else {
         _updateAvailableMessage = [self localizedStringForKey:@"Update Available"];
-        _theNewVersionMessage = [NSString stringWithFormat:[self localizedStringForKey:@"A new version of %@ is available. Please update to version %@ now."], _appName, currentAppStoreVersion];
+        _theNewVersionMessage = _releaseNotes ?: [NSString stringWithFormat:[self localizedStringForKey:@"A new version of %@ is available. Please update to version %@ now."], _appName, currentAppStoreVersion];
         _updateButtonText = [self localizedStringForKey:@"Update"];
         _nextTimeButtonText = [self localizedStringForKey:@"Next time"];
         _skipButtonText = [self localizedStringForKey:@"Skip this version"];
